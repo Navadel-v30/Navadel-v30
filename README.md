@@ -1,27 +1,17 @@
-# Navadel-v30
-
-WhatsApp Bot — Pairing Code 2025 (No QR)
-
-Lightweight • Button Menu • Stable • Production Ready
-
----
+# Navadel-v30 🔥
+WA Bot Pairing Code 2025 (NO QR)
 
 ## Features
-- Pairing Code authentication (no QR)
-- Interactive buttons
-- Auto reconnect
-- Clean & modular structure
+- Tebak Tebakan
+- XO PvP & BOT
+- Daily Quest & EXP
+- Image Menu
+- Plugin System
 
----
-
-## Requirements
-- Node.js v18+
-- Git
-- Active WhatsApp account
-
----
-
-## Installation
-```bash
+## Install
+pkg update && pkg upgrade
+pkg install nodejs git
+git clone https://github.com/USERNAME/Navadel-v30
+cd Navadel-v30
 npm install
 npm start
