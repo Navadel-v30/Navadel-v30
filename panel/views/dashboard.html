@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Navadel-v30 Panel</h2>
+
+<button onclick="load()">Load Premium User</button>
+<ul id="list"></ul>
+
+<script>
+const token = localStorage.getItem("token")
+
+function load(){
+ fetch("/api/users",{headers:{Authorization:"Bearer "+token}})
+ .then(r=>r.json())
+ .then(d=>{
+   const ul=document.getElementById("list")
+   ul.innerHTML=""
+   d.forEach(u=>{
+     ul.innerHTML+=`<li>${u}</li>`
+   })
+ })
+}
+</script>
+</body>
+</html>
