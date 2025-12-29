@@ -1,0 +1,12 @@
+[
+  {
+    "name": "AI GPT",
+    "price": "FREE",
+    "command": ".ai"
+  },
+  {
+    "name": "Downloader Pro",
+    "price": "PREMIUM",
+    "command": ".yt"
+  }
+]
