@@ -1,61 +1,50 @@
-import { createRoom, play, endRoom, render } from "../game/tiktakto.js"
-import { addPlay } from "../game/quest.js"
+import { play, render } from "../game/tiktakto.js"
 import { botMove } from "../game/xobot.js"
 
 export default {
-  command: ["xo","tiktakto"],
+  command: ["xo"],
   category: "Game",
-  desc: "Game TicTacToe 1v1",
 
   run: async ({ sock, msg, args }) => {
     const jid = msg.key.remoteJid
     const user = msg.key.participant || jid
-    const roomId = jid
 
-    // start
-    if (args[0] === "start") {
-      const target = msg.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
-      if (!target) return sock.sendMessage(jid,{ text:"Tag lawan!" })
-
-      const room = createRoom(roomId, user, target)
-      if (!room) return sock.sendMessage(jid,{ text:"Room sudah ada!" })
-
+    // ===== STEP 1: ambil angka dari user =====
+    const pos = parseInt(args[0])
+    if (isNaN(pos) || pos < 1 || pos > 9) {
       return sock.sendMessage(jid,{
         text:
-`🎮 *TIKTAKTO*
-X: @${user.split("@")[0]}
-O: @${target.split("@")[0]}
+`🎮 *XO LAWAN BOT*
+Ketik:
+.xo 1 - 9
 
-${render(room.board)}
-Giliran X`,
-        mentions:[user,target]
+1 | 2 | 3
+4 | 5 | 6
+7 | 8 | 9`
       })
     }
 
-    // play
-    const pos = parseInt(args[0])
-    if (isNaN(pos) || pos < 1 || pos > 9) return
-
-    const res = play(roomId, user, pos-1)
-    if (res.error) return sock.sendMessage(jid,{ text:"❌ Gak bisa!" })
-
-    // 🤖 BOT MOVE
-const botPos = botMove(res.board)
-if (botPos !== undefined) {
-  res.board[botPos] = "O"
-}
-    let text = `🎮 *TIKTAKTO*\n${render(res.board)}`
-
-    if (res.win) {
-      if (res.win === "DRAW") {
-        text += "\n🤝 SERI!"
-      } else {
-        text += `\n🏆 ${res.win} MENANG!`
-        addPlay(user)
-      }
-      endRoom(roomId)
+    // ===== STEP 2: player jalan =====
+    const res = play(jid, user, pos - 1)
+    if (res.error) {
+      return sock.sendMessage(jid,{ text:"❌ Kotak gak bisa!" })
     }
+
+    // ===== STEP 3: bot jalan =====
+    if (!res.win) {
+      const botPos = botMove(res.board)
+      if (botPos !== undefined) {
+        res.board[botPos] = "O"
+      }
+    }
+
+    // ===== STEP 4: kirim papan =====
+    let text = `🎮 *XO LAWAN BOT*\n${render(res.board)}`
+
+    if (res.win === "DRAW") text += "\n🤝 SERI!"
+    if (res.win === "X") text += "\n🏆 KAMU MENANG!"
+    if (res.win === "O") text += "\n💀 BOT MENANG!"
 
     sock.sendMessage(jid,{ text })
   }
-}
+  }
