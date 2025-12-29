@@ -1,47 +1,55 @@
-const rooms = {}
+import { createRoom, play, endRoom, render } from "../game/tiktakto.js"
+import { addPlay } from "../game/quest.js"
 
-export function createRoom(roomId, playerX, playerO) {
-  if (rooms[roomId]) return null
+export default {
+  command: ["xo","tiktakto"],
+  category: "Game",
+  desc: "Game TicTacToe 1v1",
 
-  rooms[roomId] = {
-    board: Array(9).fill(null),
-    turn: playerX,
-    players: { X: playerX, O: playerO }
-  }
+  run: async ({ sock, msg, args }) => {
+    const jid = msg.key.remoteJid
+    const user = msg.key.participant || jid
+    const roomId = jid
 
-  return rooms[roomId]
-}
+    // start
+    if (args[0] === "start") {
+      const target = msg.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
+      if (!target) return sock.sendMessage(jid,{ text:"Tag lawan!" })
 
-export function play(roomId, user, pos) {
-  const room = rooms[roomId]
-  if (!room) return { error: "ROOM_NOT_FOUND" }
-  if (room.turn !== user) return { error: "NOT_YOUR_TURN" }
-  if (room.board[pos] !== null) return { error: "FILLED" }
+      const room = createRoom(roomId, user, target)
+      if (!room) return sock.sendMessage(jid,{ text:"Room sudah ada!" })
 
-  const symbol = room.players.X === user ? "X" : "O"
-  room.board[pos] = symbol
-  room.turn = room.players.X === user ? room.players.O : room.players.X
+      return sock.sendMessage(jid,{
+        text:
+`🎮 *TIKTAKTO*
+X: @${user.split("@")[0]}
+O: @${target.split("@")[0]}
 
-  return { board: room.board, win: checkWin(room.board), symbol }
-}
-
-export function endRoom(roomId) {
-  delete rooms[roomId]
-}
-
-function checkWin(b) {
-  const win = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ]
-  for (let [a,b1,c] of win) {
-    if (b[a] && b[a] === b[b1] && b[a] === b[c]) return b[a]
-  }
-  return b.every(x => x) ? "DRAW" : null
-}
-
-export function render(board) {
-  return board.map(x => x || "⬜")
-    .reduce((a,b,i) => a + b + ((i+1)%3==0?"\n":""),"")
+${render(room.board)}
+Giliran X`,
+        mentions:[user,target]
+      })
     }
+
+    // play
+    const pos = parseInt(args[0])
+    if (isNaN(pos) || pos < 1 || pos > 9) return
+
+    const res = play(roomId, user, pos-1)
+    if (res.error) return sock.sendMessage(jid,{ text:"❌ Gak bisa!" })
+
+    let text = `🎮 *TIKTAKTO*\n${render(res.board)}`
+
+    if (res.win) {
+      if (res.win === "DRAW") {
+        text += "\n🤝 SERI!"
+      } else {
+        text += `\n🏆 ${res.win} MENANG!`
+        addPlay(user)
+      }
+      endRoom(roomId)
+    }
+
+    sock.sendMessage(jid,{ text })
+  }
+}
