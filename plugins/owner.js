@@ -3,10 +3,11 @@ import config from "../config.js"
 export default {
   command: ["restart"],
   run: async ({ sock, msg }) => {
-    if (!config.owner.includes(msg.key.participant.split("@")[0]))
+    const sender = msg.key.participant.split("@")[0]
+    if (!config.owner.includes(sender))
       return sock.sendMessage(msg.key.remoteJid,{ text:"❌ Owner only"})
 
-    sock.sendMessage(msg.key.remoteJid,{ text:"♻️ Restarting..."})
+    await sock.sendMessage(msg.key.remoteJid,{ text:"♻️ Restart..."})
     process.exit()
   }
 }
