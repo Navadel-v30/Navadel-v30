@@ -1,4 +1,5 @@
 import { startGame, checkAnswer, isPlaying } from "../game/tebak.js"
+import { addPlay } from "../game/quest.js"
 
 export default {
   command: ["tebak"],
@@ -6,7 +7,7 @@ export default {
   desc: "Game tebak tebakan",
 
   run: async ({ sock, msg, args }) => {
-    const user = msg.key.participant
+    const user = msg.key.participant || msg.key.remoteJid
     const text = args.join(" ")
 
     if (!text) {
@@ -26,12 +27,17 @@ export default {
 
     const res = checkAnswer(user, text)
     if (res === true) {
+  addPlay(user)
+    }
+    
       return sock.sendMessage(msg.key.remoteJid,{
         text:"✅ BENAR! GG 🔥"
       })
     }
 
     if (res === null) {
+  addPlay(user)
+}
       return sock.sendMessage(msg.key.remoteJid,{
         text:"❌ SALAH, coba lagi!"
       })
