@@ -1,24 +1,21 @@
-import fetch from "node-fetch"
+import { isPremium } from "../lib/marketplace.js"
 
 export default {
   command: ["yt","tt","ig"],
   category: "Downloader",
-  desc: "Download video",
+  desc: "Downloader video",
+  premium: true,
 
-  run: async ({ sock, msg, args, command }) => {
-    if (!args[0]) {
+  run: async ({ sock, msg, args }) => {
+    const user = msg.key.participant
+    if (!isPremium(user)) {
       return sock.sendMessage(msg.key.remoteJid,{
-        text:`📥 Gunakan:\n.${command} <url>`
+        text:"💎 Fitur PREMIUM\nHubungi owner untuk unlock"
       })
     }
 
-    // contoh API (ganti sesuai API pilihan lu)
-    const api = `https://api.example.com/download?url=${args[0]}`
-    const res = await fetch(api)
-    const json = await res.json()
-
     sock.sendMessage(msg.key.remoteJid,{
-      text:`✅ Download siap\n${json.result}`
+      text:"📥 Downloader aktif (demo)"
     })
   }
 }
