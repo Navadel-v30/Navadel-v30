@@ -1,5 +1,6 @@
 import { createRoom, play, endRoom, render } from "../game/tiktakto.js"
 import { addPlay } from "../game/quest.js"
+import { botMove } from "../game/xobot.js"
 
 export default {
   command: ["xo","tiktakto"],
@@ -38,6 +39,11 @@ Giliran X`,
     const res = play(roomId, user, pos-1)
     if (res.error) return sock.sendMessage(jid,{ text:"❌ Gak bisa!" })
 
+    // 🤖 BOT MOVE
+const botPos = botMove(res.board)
+if (botPos !== undefined) {
+  res.board[botPos] = "O"
+}
     let text = `🎮 *TIKTAKTO*\n${render(res.board)}`
 
     if (res.win) {
