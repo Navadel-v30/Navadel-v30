@@ -1,6 +1,7 @@
 export default {
   botName: "Navadel-v30",
-  owner: ["628xxxxxxx"],
+  owner: ["628xxxxxxxxx"],
   prefix: ".",
-  pairingNumber: "628xxxxxxx" // nomor WA buat pairing
+  pairingNumber: "628xxxxxxxxx",
+  antiSpam: true
 }
