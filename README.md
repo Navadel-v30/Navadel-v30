@@ -10,8 +10,14 @@ WA Bot Pairing Code 2025 (NO QR)
 
 ## Install
 pkg update && pkg upgrade
+-
 pkg install nodejs git
-git clone https://github.com/USERNAME/Navadel-v30
+-
+git clone https://github.com/Navadel-v30/Navadel-v30
+-
 cd Navadel-v30
+-
 npm install
+-
 npm start
+-
